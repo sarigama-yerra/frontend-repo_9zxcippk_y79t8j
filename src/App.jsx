@@ -1,5 +1,5 @@
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
+import GSAPLanding from "./components/GSAPLanding";
 import Services from "./components/Services";
 import Accreditations from "./components/Accreditations";
 import Sectors from "./components/Sectors";
@@ -11,7 +11,7 @@ function App() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
-      <Hero />
+      <GSAPLanding />
       <Services />
       <Accreditations />
       <Sectors />
