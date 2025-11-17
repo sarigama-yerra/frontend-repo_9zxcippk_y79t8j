@@ -10,6 +10,7 @@ export default function Navbar() {
           <a href="#accreditations" className="hover:text-slate-900">Accreditations</a>
           <a href="#sectors" className="hover:text-slate-900">Sectors</a>
           <a href="#case-studies" className="hover:text-slate-900">Case Studies</a>
+          <a href="#resources" className="hover:text-slate-900">Resources</a>
           <a href="#contact" className="hover:text-slate-900">Contact</a>
         </nav>
         <button className="md:hidden p-2 rounded hover:bg-slate-100" aria-label="Menu">
