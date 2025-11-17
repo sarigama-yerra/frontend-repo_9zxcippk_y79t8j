@@ -1,21 +1,63 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export default function GSAPLanding() {
   const root = useRef(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-      tl.from(".nav-item", { y: -16, opacity: 0, stagger: 0.06, duration: 0.6 })
-        .from(".headline", { y: 40, opacity: 0, duration: 0.9 }, "-=0.2")
-        .from(".subhead", { y: 24, opacity: 0, duration: 0.7 }, "-=0.4")
-        .from(".cta-primary", { y: 20, opacity: 0, duration: 0.6 }, "-=0.3")
-        .from(".cta-secondary", { y: 22, opacity: 0, duration: 0.6 }, "-=0.5")
-        .from(".feature-card", { y: 30, opacity: 0, stagger: 0.08, duration: 0.6 }, "-=0.2");
+    gsap.registerPlugin(ScrollTrigger);
 
-      gsap.to(".orb", { y: 10, duration: 3, ease: "sine.inOut", repeat: -1, yoyo: true });
+    const ctx = gsap.context(() => {
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // Ensure initial state is lightweight
+      gsap.set([".headline", ".subhead", ".cta-primary", ".cta-secondary", ".feature-card", ".nav-item"], {
+        willChange: prefersReduced ? "auto" : "transform, opacity",
+      });
+
+      if (prefersReduced) {
+        // Respect reduced motion: present content statically without entrance or looping animations
+        gsap.set([".nav-item", ".headline", ".subhead", ".cta-primary", ".cta-secondary", ".feature-card"], {
+          clearProps: "all",
+          opacity: 1,
+          y: 0,
+        });
+        return;
+      }
+
+      // Build a paused timeline and only play when section first enters viewport
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" }, paused: true });
+      tl.from(".nav-item", { y: -16, opacity: 0, stagger: 0.06, duration: 0.5 })
+        .from(".headline", { y: 40, opacity: 0, duration: 0.7 }, "-=0.2")
+        .from(".subhead", { y: 24, opacity: 0, duration: 0.6 }, "-=0.35")
+        .from(".cta-primary", { y: 20, opacity: 0, duration: 0.5 }, "-=0.25")
+        .from(".cta-secondary", { y: 22, opacity: 0, duration: 0.5 }, "-=0.4")
+        .from(".feature-card", { y: 30, opacity: 0, stagger: 0.07, duration: 0.5 }, "-=0.1");
+
+      ScrollTrigger.create({
+        trigger: root.current,
+        start: "top bottom-=20%",
+        once: true,
+        onEnter: () => tl.play(0),
+      });
+
+      // Ambient orb motion only while section is in view
+      gsap.to(".orb", {
+        y: 10,
+        duration: 3,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+        scrollTrigger: {
+          trigger: root.current,
+          start: "top bottom",
+          end: "bottom top",
+          toggleActions: "play pause resume pause",
+        },
+      });
     }, root);
+
     return () => ctx.revert();
   }, []);
 
